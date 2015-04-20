@@ -1,0 +1,87 @@
+<apex:page StandardController="Agility_Story__c" extensions="AgilityBacklogCon" >
+  
+    <!-- insert jquery here -->
+    <apex:includescript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"> </apex:includescript>
+    <apex:includescript value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.js"></apex:includescript>
+    <apex:stylesheet value="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/cupertino/jquery-ui.css"></apex:stylesheet>
+    
+    <!-- sforce js -->
+    <apex:includescript value="/soap/ajax/21.0/connection.js"> </apex:includescript>
+    <apex:includescript value="/soap/ajax/21.0/apex.js"> </apex:includescript>
+
+    <style>
+        #sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+        #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+        #sortable li span { position: absolute; margin-left: -1.3em; }
+    </style>
+    
+    <script>
+        $(document).ready(function(){
+            
+            /*$( ".draggable" ).draggable();
+            $( "#droppable" ).sortable({
+              connectWith: '#sortable',
+              drop: function( event, ui ) {
+                $( this )
+                  .addClass( "ui-state-highlight" )
+                  .find( "p" )
+                    .html( "Dropped!" );
+              }
+            });*/
+
+            $( "#sortable" ).sortable({
+                connectWith: '#droppable',
+                update: function(event, ui){
+                    init();
+                    $('msg').toggle();
+                    var result = $(this).sortable('toArray');
+                    length = result.length;
+                    var stories = [];
+                    for(i=0; i < length; i++){
+
+                        var story = new sforce.SObject("Agility_Story__c");
+                        story.Id = result[i];
+                        story.Sort_Order__c = i;
+
+                        stories.push(story);
+                        //final = sforce.connection.update([story]);
+
+                    }
+
+                    final = sforce.connection.update(stories);
+
+                    $('msg').toggle();
+                }
+            });
+            
+            $( "#sortable" ).disableSelection();
+
+            function init(){
+                sforce.connection.sessionId = '{!$Api.Session_ID}';
+            }
+
+        });
+    </script>
+ 
+    <div id="msg"/>
+ 
+    <apex:sectionheader id="sechead" subtitle="Sorting" title="Backlog"></apex:sectionheader>
+
+   
+            <apex:pageblock title="Sortable Backlog">
+                <ul id="sortable">
+                    <apex:repeat id="list" value="{!stories}" var="s">
+                        <li class="ui-state-default draggable" id="{!s.Id}"><span class="ui-icon ui-icon-arrowthick-2-n-s" id="{!s.Id}"></span>{!s.Name}</li>
+                    </apex:repeat>
+                </ul>
+            </apex:pageblock>
+
+            
+                <div id="droppable" class="ui-widget-header">
+                    <p>Drop here</p>
+                </div>
+
+            
+
+
+</apex:page>

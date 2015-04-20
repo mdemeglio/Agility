@@ -1,0 +1,6 @@
+<apex:page controller="TrackLocatorCon">
+  <!-- Begin Default Content REMOVE THIS -->
+  <h1>Track Locator</h1>
+  Use this page to locate a track near you.
+  <!-- End Default Content REMOVE THIS -->
+</apex:page>
